@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html-head('Examination Result - ' + ${result.studentName})}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="result-container">
+    <div class="result-card">
+        <!-- Result Banner: Green for PASS, Red for FAIL -->
+        <div class="result-banner" th:classappend="${result.passed ? 'pass' : 'fail'}">
+            <span class="badge" style="background: rgba(255,255,255,0.25); color: #ffffff; border: none; margin-bottom: 0.75rem;">
+                Official Institutional Assessment Transcript
+            </span>
+            <div class="result-badge-large" th:text="${result.passFail}">PASS</div>
+            
+            <div class="result-score-circle">
+                <span class="result-score-number" th:text="${result.percentage} + '%'">80%</span>
+                <span class="result-score-label">Score Percentage</span>
+            </div>
+        </div>
+
+        <!-- Result Breakdown Statistics -->
+        <div class="result-breakdown-box">
+            <div>
+                <div class="breakdown-stat-val" style="color: var(--primary);" th:text="${result.score} + ' / ' + ${result.totalMarks}">8 / 10</div>
+                <div class="breakdown-stat-lbl">Marks Obtained</div>
+            </div>
+            <div>
+                <div class="breakdown-stat-val" style="color: var(--success);" th:text="${result.correctCount}">8</div>
+                <div class="breakdown-stat-lbl">Correct Answers</div>
+            </div>
+            <div>
+                <div class="breakdown-stat-val" style="color: var(--danger);" th:text="${result.incorrectCount}">2</div>
+                <div class="breakdown-stat-lbl">Incorrect Answers</div>
+            </div>
+            <div>
+                <div class="breakdown-stat-val" style="color: var(--text-muted);" th:text="${result.unattemptedCount}">0</div>
+                <div class="breakdown-stat-lbl">Unattempted</div>
+            </div>
+        </div>
+
+        <!-- Student & Examination Meta Grid -->
+        <div class="result-details-grid">
+            <div class="result-detail-item">
+                <span class="result-detail-label">Candidate Name</span>
+                <span class="result-detail-value" th:text="${result.studentName}">Yashwanth Naik</span>
+            </div>
+
+            <div class="result-detail-item">
+                <span class="result-detail-label">Student ID / Roll No</span>
+                <span class="result-detail-value" th:text="${result.studentId}">1MS21CS099</span>
+            </div>
+
+            <div class="result-detail-item">
+                <span class="result-detail-label">Course / Program</span>
+                <span class="result-detail-value" th:text="${result.course}">BTech CSE</span>
+            </div>
+
+            <div class="result-detail-item">
+                <span class="result-detail-label">Examination Title</span>
+                <span class="result-detail-value" th:text="${result.examTitle}">Java &amp; Database Assessment</span>
+            </div>
+
+            <div class="result-detail-item">
+                <span class="result-detail-label">Passing Benchmark</span>
+                <span class="result-detail-value" th:text="${result.passingPercentage} + '% required to pass'">40% required</span>
+            </div>
+
+            <div class="result-detail-item">
+                <span class="result-detail-label">Time Taken</span>
+                <span class="result-detail-value" th:text="${result.formattedTimeTaken}">4 min 12 sec</span>
+            </div>
+
+            <div class="result-detail-item">
+                <span class="result-detail-label">Date &amp; Time of Evaluation</span>
+                <span class="result-detail-value" th:text="${result.formattedSubmittedAt}">Oct 22, 2026 13:45:00</span>
+            </div>
+
+            <div class="result-detail-item">
+                <span class="result-detail-label">Unique Verification ID</span>
+                <span class="result-detail-value" style="font-family: monospace; font-size: 0.9rem;" th:text="${result.attemptUuid}">
+                    550e8400-e29b-41d4-a716-446655440000
+                </span>
+            </div>
+        </div>
+
+        <!-- Action Buttons (Hidden on Print) -->
+        <div class="card-footer btn-print-hide" style="display: flex; justify-content: space-between; align-items: center;">
+            <a th:href="@{/}" class="btn btn-secondary">
+                <span>&larr; Return to Home</span>
+            </a>
+            <div style="display: flex; gap: 0.75rem;">
+                <button type="button" class="btn btn-outline-primary" id="printResultBtn">
+                    <span>🖨️ Print Transcript / PDF</span>
+                </button>
+                <a th:href="@{/exam/register}" class="btn btn-primary">
+                    <span>Take Another Exam</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html-head('Administrator Login')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container" style="max-width: 440px; margin: 4rem auto;">
+    <div class="card">
+        <div class="card-header" style="text-align: center; display: block; padding: 1.75rem 1.5rem 1.25rem;">
+            <div class="brand-icon" style="margin: 0 auto 0.75rem; width: 44px; height: 44px; font-size: 1.3rem;">EF</div>
+            <h2 class="card-title" style="font-size: 1.35rem;">Staff &amp; Admin Sign In</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">Authorized examination controllers and faculty only.</p>
+        </div>
+
+        <form th:action="@{/admin/login}" method="post">
+            <div class="card-body">
+                <!-- Local Demo Credentials Banner -->
+                <div style="background: var(--primary-light); border: 1px solid var(--primary-border); border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-bottom: 1.25rem; font-size: 0.85rem;">
+                    <div style="font-weight: 700; color: var(--primary); margin-bottom: 0.2rem;">Local Demo Credentials:</div>
+                    <div style="color: var(--text-muted);">
+                        Username: <code style="font-weight: 700; color: var(--text-main);">admin</code><br>
+                        Password: <code style="font-weight: 700; color: var(--text-main);">admin123</code>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" id="username" name="username" class="form-control" placeholder="Enter admin username" required autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.75rem;">
+                    <span>Secure Sign In &rarr;</span>
+                </button>
+            </div>
+            <div class="card-footer" style="text-align: center; font-size: 0.85rem;">
+                <a th:href="@{/}" style="color: var(--text-muted);">&larr; Return to Candidate Examination Portal</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

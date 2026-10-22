@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html-head('Attempt Evaluation Breakdown')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container" style="max-width: 900px; margin: 2.5rem auto;">
+    <!-- Breadcrumb / Back Navigation -->
+    <div style="margin-bottom: 1.5rem;">
+        <a th:href="@{/admin/dashboard}" class="btn btn-secondary btn-sm">&larr; Back to Results Dashboard</a>
+    </div>
+
+    <!-- Candidate Attempt Overview Card -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header" style="background: var(--bg-alt);">
+            <div>
+                <h2 class="card-title">Candidate Evaluation Breakdown</h2>
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">
+                    Attempt UUID: <code th:text="${result.attemptUuid}">550e8400-e29b-41d4-a716-446655440000</code>
+                </div>
+            </div>
+            <span class="badge" th:classappend="${result.passed ? 'badge-pass' : 'badge-fail'}" style="font-size: 0.95rem; padding: 0.4rem 0.9rem;" th:text="${result.passFail}">
+                PASS
+            </span>
+        </div>
+
+        <div class="card-body">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem;">
+                <div>
+                    <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Candidate</div>
+                    <div style="font-weight: 700; font-size: 1.05rem;" th:text="${result.studentName}">Yashwanth Naik</div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted);" th:text="'ID: ' + ${result.studentId}">ID: 1MS21CS099</div>
+                </div>
+
+                <div>
+                    <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Examination</div>
+                    <div style="font-weight: 700; font-size: 1.05rem;" th:text="${result.examTitle}">Java Assessment</div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted);" th:text="${result.examSubject}">Core CS</div>
+                </div>
+
+                <div>
+                    <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Final Score</div>
+                    <div style="font-weight: 800; font-size: 1.25rem; color: var(--primary);" th:text="${result.score} + ' / ' + ${result.totalMarks} + ' (' + ${result.percentage} + '%)'">
+                        8 / 10 (80%)
+                    </div>
+                </div>
+
+                <div>
+                    <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Submission Time</div>
+                    <div style="font-weight: 600; font-size: 0.95rem;" th:text="${result.formattedSubmittedAt}">Oct 22, 2026</div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted);" th:text="'Duration: ' + ${result.formattedTimeTaken}">Duration: 4m 12s</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Question-by-Question Detailed Audit -->
+    <h3 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 1.25rem;">Question Audit Trail</h3>
+
+    <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+        <div th:each="q : ${result.questions}" class="card" style="border-left: 4px solid;"
+             th:styleappend="${q.selectedOption == null ? 'border-left-color: var(--warning);' : (q.correct ? 'border-left-color: var(--success);' : 'border-left-color: var(--danger);')}">
+            <div class="card-header" style="background: transparent; padding: 1rem 1.25rem;">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <span class="badge badge-secondary" th:text="'Q' + ${q.questionNumber}">Q1</span>
+                    <span th:if="${q.correct}" class="badge badge-pass">Correct (+<span th:text="${q.marksAwarded}">1</span> mark)</span>
+                    <span th:if="${!q.correct && q.selectedOption != null}" class="badge badge-fail">Incorrect (0 marks)</span>
+                    <span th:if="${q.selectedOption == null}" class="badge" style="background: var(--warning-bg); color: var(--warning);">Unattempted (0 marks)</span>
+                </div>
+            </div>
+
+            <div class="card-body" style="padding: 1.25rem;">
+                <p style="font-weight: 600; font-size: 1.05rem; margin-bottom: 1rem;" th:text="${q.questionText}">
+                    Question text content here.
+                </p>
+
+                <div style="display: grid; grid-template-columns: 1fr; gap: 0.5rem; font-size: 0.92rem; margin-bottom: 1rem;">
+                    <div style="padding: 0.5rem 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);"
+                         th:styleappend="${q.correctOption == 'A' ? 'background: var(--success-bg); border-color: var(--success-border); font-weight: 600;' : (q.selectedOption == 'A' ? 'background: var(--danger-bg); border-color: var(--danger-border);' : '')}">
+                        <strong>A)</strong> <span th:text="${q.optionA}">Option A</span>
+                        <span th:if="${q.correctOption == 'A'}" style="color: var(--success-dark); margin-left: 0.5rem; font-weight: 700;">[Correct Key]</span>
+                        <span th:if="${q.selectedOption == 'A' && q.correctOption != 'A'}" style="color: var(--danger-dark); margin-left: 0.5rem; font-weight: 700;">[Candidate Answer]</span>
+                    </div>
+
+                    <div style="padding: 0.5rem 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);"
+                         th:styleappend="${q.correctOption == 'B' ? 'background: var(--success-bg); border-color: var(--success-border); font-weight: 600;' : (q.selectedOption == 'B' ? 'background: var(--danger-bg); border-color: var(--danger-border);' : '')}">
+                        <strong>B)</strong> <span th:text="${q.optionB}">Option B</span>
+                        <span th:if="${q.correctOption == 'B'}" style="color: var(--success-dark); margin-left: 0.5rem; font-weight: 700;">[Correct Key]</span>
+                        <span th:if="${q.selectedOption == 'B' && q.correctOption != 'B'}" style="color: var(--danger-dark); margin-left: 0.5rem; font-weight: 700;">[Candidate Answer]</span>
+                    </div>
+
+                    <div style="padding: 0.5rem 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);"
+                         th:styleappend="${q.correctOption == 'C' ? 'background: var(--success-bg); border-color: var(--success-border); font-weight: 600;' : (q.selectedOption == 'C' ? 'background: var(--danger-bg); border-color: var(--danger-border);' : '')}">
+                        <strong>C)</strong> <span th:text="${q.optionC}">Option C</span>
+                        <span th:if="${q.correctOption == 'C'}" style="color: var(--success-dark); margin-left: 0.5rem; font-weight: 700;">[Correct Key]</span>
+                        <span th:if="${q.selectedOption == 'C' && q.correctOption != 'C'}" style="color: var(--danger-dark); margin-left: 0.5rem; font-weight: 700;">[Candidate Answer]</span>
+                    </div>
+
+                    <div style="padding: 0.5rem 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);"
+                         th:styleappend="${q.correctOption == 'D' ? 'background: var(--success-bg); border-color: var(--success-border); font-weight: 600;' : (q.selectedOption == 'D' ? 'background: var(--danger-bg); border-color: var(--danger-border);' : '')}">
+                        <strong>D)</strong> <span th:text="${q.optionD}">Option D</span>
+                        <span th:if="${q.correctOption == 'D'}" style="color: var(--success-dark); margin-left: 0.5rem; font-weight: 700;">[Correct Key]</span>
+                        <span th:if="${q.selectedOption == 'D' && q.correctOption != 'D'}" style="color: var(--danger-dark); margin-left: 0.5rem; font-weight: 700;">[Candidate Answer]</span>
+                    </div>
+                </div>
+
+                <div th:if="${q.explanation}" style="background: var(--bg-alt); padding: 0.75rem 1rem; border-radius: var(--radius-md); font-size: 0.88rem; color: var(--text-muted);">
+                    <strong>Explanation:</strong> <span th:text="${q.explanation}">Answer rationale explanation.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

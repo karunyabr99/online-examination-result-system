@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html-head('Student Examination Registration')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container" style="max-width: 600px; margin: 3rem auto;">
+    <div class="card">
+        <div class="card-header" style="background: var(--bg-alt);">
+            <div>
+                <h2 class="card-title">Student Examination Entry</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">Please provide your candidate credentials to access the examination hall.</p>
+            </div>
+            <span class="badge badge-primary">Step 1 of 3</span>
+        </div>
+
+        <form th:action="@{/exam/instructions}" th:object="${registrationDto}" method="post">
+            <div class="card-body">
+                <!-- Examination Selection -->
+                <div class="form-group">
+                    <label for="examId" class="form-label">Select Examination <span style="color: var(--danger);">*</span></label>
+                    <select id="examId" th:field="*{examId}" class="form-select" required>
+                        <option value="">-- Choose an Examination --</option>
+                        <option th:each="e : ${activeExams}"
+                                th:value="${e.id}"
+                                th:text="${e.title} + ' (' + ${e.subject} + ' - ' + ${e.durationMinutes} + ' mins)'"
+                                th:selected="${registrationDto.examId == e.id}">
+                            Java &amp; Database Assessment
+                        </option>
+                    </select>
+                    <div th:if="${#fields.hasErrors('examId')}" th:errors="*{examId}" class="form-error"></div>
+                </div>
+
+                <!-- Full Name -->
+                <div class="form-group">
+                    <label for="fullName" class="form-label">Full Name <span style="color: var(--danger);">*</span></label>
+                    <input type="text" id="fullName" th:field="*{fullName}" class="form-control" placeholder="e.g. Yashwanth Naik" required>
+                    <div th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}" class="form-error"></div>
+                </div>
+
+                <!-- Student ID / Roll Number -->
+                <div class="form-group">
+                    <label for="studentId" class="form-label">Student ID / Roll Number <span style="color: var(--danger);">*</span></label>
+                    <input type="text" id="studentId" th:field="*{studentId}" class="form-control" placeholder="e.g. 1MS21CS099" required>
+                    <div class="form-text">Your institutional roll or registration identifier.</div>
+                    <div th:if="${#fields.hasErrors('studentId')}" th:errors="*{studentId}" class="form-error"></div>
+                </div>
+
+                <!-- Course / Subject -->
+                <div class="form-group">
+                    <label for="course" class="form-label">Department / Course <span style="color: var(--danger);">*</span></label>
+                    <input type="text" id="course" th:field="*{course}" class="form-control" placeholder="e.g. BTech CSE - Semester 6" required>
+                    <div th:if="${#fields.hasErrors('course')}" th:errors="*{course}" class="form-error"></div>
+                </div>
+
+                <!-- Email (Optional) -->
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address <span style="color: var(--text-muted); font-weight: 400;">(Optional)</span></label>
+                    <input type="email" id="email" th:field="*{email}" class="form-control" placeholder="e.g. candidate@university.edu">
+                    <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="form-error"></div>
+                </div>
+            </div>
+
+            <div class="card-footer" style="display: flex; justify-content: space-between; align-items: center;">
+                <a th:href="@{/}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                    <span>Proceed to Instructions &rarr;</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html-head('Examination in Progress - ' + ${exam.title})}"></head>
+<body style="background: var(--bg-main);">
+
+<!-- Sticky Examination Header -->
+<header class="exam-header">
+    <div class="exam-header-content">
+        <div>
+            <h1 class="exam-meta-title" th:text="${exam.title}">Java &amp; Database Assessment</h1>
+            <div class="exam-meta-subtitle">
+                Subject: <span th:text="${exam.subject}">Core CS</span> &bull;
+                Attempt ID: <span th:text="${#strings.substring(attempt.attemptUuid, 0, 8)} + '...'">abc12345</span>
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 1.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.88rem;">
+                <span class="badge badge-secondary">
+                    Answered: <strong id="answeredCount" style="color: var(--success); margin-left: 0.25rem;">0</strong>
+                </span>
+                <span class="badge badge-secondary">
+                    Unanswered: <strong id="unansweredCount" style="color: var(--danger); margin-left: 0.25rem;" th:text="${questions.size()}">10</strong>
+                </span>
+            </div>
+
+            <!-- Countdown Timer Container -->
+            <div class="exam-timer-box" th:data-duration-seconds="${durationSeconds}">
+                <span>⏱️</span>
+                <span id="timerDisplay">10:00</span>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main>
+    <form id="examForm" th:action="@{/exam/submit}" method="post">
+        <input type="hidden" name="attemptUuid" th:value="${attempt.attemptUuid}">
+
+        <div class="exam-layout">
+            <!-- Left Column: Active Question Container -->
+            <div class="question-container-area">
+                <div th:each="q, stat : ${questions}"
+                     class="question-card"
+                     th:classappend="${stat.index == 0 ? 'active' : ''}"
+                     th:id="'question-card-' + ${stat.index}"
+                     th:data-question-id="${q.id}">
+
+                    <div class="question-header">
+                        <span class="question-number-badge" th:text="'Question ' + ${stat.count} + ' of ' + ${questions.size()}">Question 1 of 10</span>
+                        <span class="question-marks-badge" th:text="'Marks: ' + ${q.marks}">Marks: 1</span>
+                    </div>
+
+                    <div class="question-text" th:text="${q.questionText}">
+                        Question text content goes here.
+                    </div>
+
+                    <div class="options-list">
+                        <!-- Option A -->
+                        <label class="option-card" th:for="'opt-a-' + ${q.id}">
+                            <input type="radio" th:id="'opt-a-' + ${q.id}" th:name="'answer_' + ${q.id}" value="A">
+                            <span class="option-letter">A</span>
+                            <span class="option-text" th:text="${q.optionA}">Option A text</span>
+                        </label>
+
+                        <!-- Option B -->
+                        <label class="option-card" th:for="'opt-b-' + ${q.id}">
+                            <input type="radio" th:id="'opt-b-' + ${q.id}" th:name="'answer_' + ${q.id}" value="B">
+                            <span class="option-letter">B</span>
+                            <span class="option-text" th:text="${q.optionB}">Option B text</span>
+                        </label>
+
+                        <!-- Option C -->
+                        <label class="option-card" th:for="'opt-c-' + ${q.id}">
+                            <input type="radio" th:id="'opt-c-' + ${q.id}" th:name="'answer_' + ${q.id}" value="C">
+                            <span class="option-letter">C</span>
+                            <span class="option-text" th:text="${q.optionC}">Option C text</span>
+                        </label>
+
+                        <!-- Option D -->
+                        <label class="option-card" th:for="'opt-d-' + ${q.id}">
+                            <input type="radio" th:id="'opt-d-' + ${q.id}" th:name="'answer_' + ${q.id}" value="D">
+                            <span class="option-letter">D</span>
+                            <span class="option-text" th:text="${q.optionD}">Option D text</span>
+                        </label>
+                    </div>
+
+                    <div class="exam-nav-controls">
+                        <div>
+                            <button type="button" class="btn btn-secondary btn-sm" id="clearAnswerBtn">Clear Selection</button>
+                        </div>
+
+                        <div style="display: flex; gap: 0.75rem;">
+                            <button type="button" class="btn btn-secondary" id="prevQuestionBtn" disabled>&larr; Previous</button>
+                            <button type="button" class="btn btn-primary" id="nextQuestionBtn">Next &rarr;</button>
+                            <button type="button" class="btn btn-success" id="openSubmitModalBtn">
+                                <span>Finish Examination &check;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Question Navigation Palette -->
+            <aside class="palette-card">
+                <h3 class="palette-title">Question Palette</h3>
+                <div class="palette-grid">
+                    <button th:each="q, stat : ${questions}"
+                            type="button"
+                            class="palette-btn"
+                            th:classappend="${stat.index == 0 ? 'current' : ''}"
+                            th:data-index="${stat.index}"
+                            th:text="${stat.count}">
+                        1
+                    </button>
+                </div>
+
+                <div class="palette-legend">
+                    <div class="legend-item">
+                        <span class="legend-dot answered"></span>
+                        <span>Answered Question</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot unanswered"></span>
+                        <span>Unanswered Question</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot current"></span>
+                        <span>Current Active Question</span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 1.5rem;">
+                    <button type="button" class="btn btn-outline-primary" style="width: 100%;" onclick="document.getElementById('openSubmitModalBtn').click();">
+                        Submit Paper
+                    </button>
+                </div>
+            </aside>
+        </div>
+    </form>
+</main>
+
+<!-- Submission Confirmation Modal -->
+<div class="modal-overlay" id="submitModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Confirm Final Submission</h3>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom: 1rem;">Are you sure you wish to conclude and submit your examination?</p>
+            <div style="background: var(--bg-alt); padding: 1rem; border-radius: var(--radius-md); font-size: 0.9rem; margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+                    <span>Answered Questions:</span>
+                    <strong style="color: var(--success);" id="modalAnsweredCount">0</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span>Unanswered Questions:</span>
+                    <strong style="color: var(--danger);" id="modalUnansweredCount">10</strong>
+                </div>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">
+                Once submitted, answers cannot be modified and your performance will be evaluated immediately.
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="cancelModalBtn">Review Answers</button>
+            <button type="button" class="btn btn-success" id="confirmSubmitBtn">
+                <span>Confirm &amp; Submit</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/exam.js}"></script>
+</body>
+</html>

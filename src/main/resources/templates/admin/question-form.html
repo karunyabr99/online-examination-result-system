@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html-head(${isEdit ? 'Edit Question' : 'Author New Question'})}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container" style="max-width: 750px; margin: 3rem auto;">
+    <div class="card">
+        <div class="card-header" style="background: var(--bg-alt);">
+            <div>
+                <h2 class="card-title" th:text="${isEdit ? 'Edit Question Record' : 'Author New Question'}">Author Question</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">Define four options and mark the single valid answer key.</p>
+            </div>
+            <a th:href="@{/admin/questions}" class="btn btn-secondary btn-sm">&larr; Back to Questions</a>
+        </div>
+
+        <form th:action="${isEdit ? '/admin/questions/update/' + questionForm.id : '/admin/questions/save'}"
+              th:object="${questionForm}"
+              method="post">
+            <input type="hidden" th:if="${isEdit}" th:field="*{id}">
+
+            <div class="card-body">
+                <!-- Exam Assignment -->
+                <div class="form-group">
+                    <label for="examId" class="form-label">Assign to Examination <span style="color: var(--danger);">*</span></label>
+                    <select id="examId" th:field="*{examId}" class="form-select" required>
+                        <option value="">-- Choose Examination --</option>
+                        <option th:each="e : ${exams}"
+                                th:value="${e.id}"
+                                th:text="${e.title} + ' (' + ${e.subject} + ')'"
+                                th:selected="${questionForm.examId == e.id}">
+                            Java &amp; Database Assessment
+                        </option>
+                    </select>
+                    <div th:if="${#fields.hasErrors('examId')}" th:errors="*{examId}" class="form-error"></div>
+                </div>
+
+                <!-- Question Text -->
+                <div class="form-group">
+                    <label for="questionText" class="form-label">Question Text / Problem Statement <span style="color: var(--danger);">*</span></label>
+                    <textarea id="questionText" th:field="*{questionText}" class="form-control" rows="3" placeholder="Enter the complete question prompt..." required></textarea>
+                    <div th:if="${#fields.hasErrors('questionText')}" th:errors="*{questionText}" class="form-error"></div>
+                </div>
+
+                <!-- 4 Options Grid -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="optionA" class="form-label">Option A <span style="color: var(--danger);">*</span></label>
+                        <input type="text" id="optionA" th:field="*{optionA}" class="form-control" placeholder="Choice A text" required>
+                        <div th:if="${#fields.hasErrors('optionA')}" th:errors="*{optionA}" class="form-error"></div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="optionB" class="form-label">Option B <span style="color: var(--danger);">*</span></label>
+                        <input type="text" id="optionB" th:field="*{optionB}" class="form-control" placeholder="Choice B text" required>
+                        <div th:if="${#fields.hasErrors('optionB')}" th:errors="*{optionB}" class="form-error"></div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="optionC" class="form-label">Option C <span style="color: var(--danger);">*</span></label>
+                        <input type="text" id="optionC" th:field="*{optionC}" class="form-control" placeholder="Choice C text" required>
+                        <div th:if="${#fields.hasErrors('optionC')}" th:errors="*{optionC}" class="form-error"></div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="optionD" class="form-label">Option D <span style="color: var(--danger);">*</span></label>
+                        <input type="text" id="optionD" th:field="*{optionD}" class="form-control" placeholder="Choice D text" required>
+                        <div th:if="${#fields.hasErrors('optionD')}" th:errors="*{optionD}" class="form-error"></div>
+                    </div>
+                </div>
+
+                <!-- Answer Key & Marks -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="correctOption" class="form-label">Correct Option Key <span style="color: var(--danger);">*</span></label>
+                        <select id="correctOption" th:field="*{correctOption}" class="form-select" required>
+                            <option value="">-- Select Correct Option --</option>
+                            <option value="A">Option A</option>
+                            <option value="B">Option B</option>
+                            <option value="C">Option C</option>
+                            <option value="D">Option D</option>
+                        </select>
+                        <div th:if="${#fields.hasErrors('correctOption')}" th:errors="*{correctOption}" class="form-error"></div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="marks" class="form-label">Marks Awarded <span style="color: var(--danger);">*</span></label>
+                        <input type="number" id="marks" th:field="*{marks}" class="form-control" min="1" max="100" required>
+                        <div th:if="${#fields.hasErrors('marks')}" th:errors="*{marks}" class="form-error"></div>
+                    </div>
+                </div>
+
+                <!-- Explanation (Optional) -->
+                <div class="form-group">
+                    <label for="explanation" class="form-label">Explanation / Solution Rationale <span style="color: var(--text-muted); font-weight: 400;">(Optional)</span></label>
+                    <textarea id="explanation" th:field="*{explanation}" class="form-control" rows="2" placeholder="Brief technical rationale displayed in administrator evaluation reports..."></textarea>
+                    <div th:if="${#fields.hasErrors('explanation')}" th:errors="*{explanation}" class="form-error"></div>
+                </div>
+            </div>
+
+            <div class="card-footer" style="display: flex; justify-content: space-between; align-items: center;">
+                <a th:href="@{/admin/questions}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                    <span th:text="${isEdit ? 'Save Changes' : 'Create Question'}">Save Question</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

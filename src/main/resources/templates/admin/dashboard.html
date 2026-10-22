@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html-head('Admin Results Dashboard')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container" style="margin: 2.5rem auto;">
+    <!-- Dashboard Top Bar -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 800; color: var(--text-main);">Examination Results Dashboard</h1>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Monitor candidate performance, evaluate cohort trends, and export certified records.</p>
+        </div>
+        <div style="display: flex; gap: 0.75rem;">
+            <a th:href="@{/admin/questions}" class="btn btn-secondary">
+                <span>Manage Question Bank</span>
+            </a>
+            <a th:href="@{/admin/results/export-csv(search=${search}, examId=${selectedExamId}, passFail=${selectedPassFail})}" class="btn btn-primary">
+                <span>📥 Export CSV Report</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Metrics Cards (Direct from SQLite) -->
+    <div class="stats-grid" style="margin-top: 0; margin-bottom: 2rem;">
+        <div class="stat-card">
+            <div class="stat-icon blue">👨‍🎓</div>
+            <div>
+                <div class="stat-label">Unique Candidates</div>
+                <div class="stat-value" th:text="${metrics.totalStudents}">0</div>
+                <div class="stat-desc">Distinct registered students</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon purple">📝</div>
+            <div>
+                <div class="stat-label">Total Attempts</div>
+                <div class="stat-value" th:text="${metrics.totalAttempts}">0</div>
+                <div class="stat-desc">Evaluated submissions</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon green">✅</div>
+            <div>
+                <div class="stat-label">Pass Count</div>
+                <div class="stat-value" th:text="${metrics.totalPassed}">0</div>
+                <div class="stat-desc" th:text="${metrics.passRate} + '% success rate'">0.0% success rate</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon amber">❌</div>
+            <div>
+                <div class="stat-label">Failures</div>
+                <div class="stat-value" th:text="${metrics.totalFailed}">0</div>
+                <div class="stat-desc">Below passing threshold</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search & Filter Controls -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-body" style="padding: 1.25rem 1.5rem;">
+            <form th:action="@{/admin/dashboard}" method="get" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+                <!-- Search Box -->
+                <div style="flex: 2; min-width: 220px;">
+                    <label for="search" class="form-label" style="font-size: 0.82rem;">Search Candidate</label>
+                    <input type="text" id="search" name="search" th:value="${search}" class="form-control" placeholder="Search by Student Name or ID...">
+                </div>
+
+                <!-- Exam Filter -->
+                <div style="flex: 2; min-width: 200px;">
+                    <label for="examFilter" class="form-label" style="font-size: 0.82rem;">Filter by Examination</label>
+                    <select id="examFilter" name="examId" class="form-select">
+                        <option value="">All Examinations</option>
+                        <option th:each="e : ${exams}"
+                                th:value="${e.id}"
+                                th:text="${e.title}"
+                                th:selected="${selectedExamId == e.id}">
+                            Java &amp; Database Assessment
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Status Filter -->
+                <div style="flex: 1; min-width: 140px;">
+                    <label for="passFail" class="form-label" style="font-size: 0.82rem;">Status</label>
+                    <select id="passFail" name="passFail" class="form-select">
+                        <option value="ALL" th:selected="${selectedPassFail == null || selectedPassFail == 'ALL'}">All Status</option>
+                        <option value="PASS" th:selected="${selectedPassFail == 'PASS'}">PASS Only</option>
+                        <option value="FAIL" th:selected="${selectedPassFail == 'FAIL'}">FAIL Only</option>
+                    </select>
+                </div>
+
+                <!-- Action Buttons -->
+                <div style="display: flex; gap: 0.5rem;">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                    <a th:href="@{/admin/dashboard}" class="btn btn-secondary">Reset</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Table Card -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Candidate Evaluation Records</h2>
+            <span class="badge badge-secondary" th:text="${results.size()} + ' Records'">0 Records</span>
+        </div>
+
+        <div th:if="${#lists.isEmpty(results)}" class="empty-state">
+            <div class="empty-state-icon">📂</div>
+            <h3 class="empty-state-title">No Examination Results Found</h3>
+            <p class="empty-state-text">No candidate attempts have matched your current filter criteria or been submitted yet.</p>
+            <a th:href="@{/exam/register}" class="btn btn-primary">Take a Practice Exam</a>
+        </div>
+
+        <div th:unless="${#lists.isEmpty(results)}" class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Attempt ID</th>
+                        <th>Student Name</th>
+                        <th>Student ID</th>
+                        <th>Examination</th>
+                        <th>Score</th>
+                        <th>Percentage</th>
+                        <th>Status</th>
+                        <th>Evaluated Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="r : ${results}">
+                        <td>
+                            <code style="font-size: 0.85rem;" th:text="${#strings.substring(r.attemptUuid, 0, 8)} + '...'">abc12345</code>
+                        </td>
+                        <td>
+                            <strong th:text="${r.studentName}">Yashwanth Naik</strong>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);" th:text="${r.course}">BTech CSE</div>
+                        </td>
+                        <td th:text="${r.studentId}">1MS21CS099</td>
+                        <td th:text="${r.examTitle}">Java Assessment</td>
+                        <td>
+                            <strong th:text="${r.score} + ' / ' + ${r.totalMarks}">8 / 10</strong>
+                        </td>
+                        <td>
+                            <span style="font-weight: 700;" th:text="${r.percentage} + '%'">80%</span>
+                        </td>
+                        <td>
+                            <span class="badge" th:classappend="${r.passed ? 'badge-pass' : 'badge-fail'}" th:text="${r.passFail}">
+                                PASS
+                            </span>
+                        </td>
+                        <td style="font-size: 0.85rem; color: var(--text-muted);" th:text="${r.formattedSubmittedAt}">
+                            Oct 22, 2026
+                        </td>
+                        <td>
+                            <a th:href="@{/admin/result/{uuid}(uuid=${r.attemptUuid})}" class="btn btn-outline-primary btn-sm">
+                                View Details &rarr;
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

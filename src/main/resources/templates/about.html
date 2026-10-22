@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html-head('About & Architecture')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<main class="container" style="margin: 3rem auto; max-width: 960px;">
+    <div style="margin-bottom: 2.5rem; text-align: center;">
+        <span class="badge badge-primary" style="margin-bottom: 0.75rem;">Academic Project Documentation</span>
+        <h1 style="font-size: 2.5rem; font-weight: 800; color: var(--text-main);">Online Examination and Result Processing System</h1>
+        <p style="color: var(--text-muted); font-size: 1.1rem; max-width: 700px; margin: 0.5rem auto 0;">
+            A complete BTech CSE Microproject developed by adhering to modern software engineering principles, layered architecture, and secure full-stack development patterns.
+        </p>
+    </div>
+
+    <!-- Tech Stack Summary -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+            <h2 class="card-title">Technology Stack</h2>
+        </div>
+        <div class="card-body">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+                <div>
+                    <h4 style="color: var(--primary); font-size: 0.95rem;">Backend Engine</h4>
+                    <p style="font-weight: 700; margin-top: 0.25rem;">Java 21 (LTS)</p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Modern language features, records, pattern matching.</p>
+                </div>
+                <div>
+                    <h4 style="color: var(--primary); font-size: 0.95rem;">Framework</h4>
+                    <p style="font-weight: 700; margin-top: 0.25rem;">Spring Boot 3.3.4</p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Spring MVC, Spring JDBC, Bean Validation.</p>
+                </div>
+                <div>
+                    <h4 style="color: var(--primary); font-size: 0.95rem;">Database Engine</h4>
+                    <p style="font-weight: 700; margin-top: 0.25rem;">SQLite 3 with SQLite JDBC</p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Relational storage with PRAGMA foreign_keys = ON.</p>
+                </div>
+                <div>
+                    <h4 style="color: var(--primary); font-size: 0.95rem;">Frontend Presentation</h4>
+                    <p style="font-weight: 700; margin-top: 0.25rem;">Thymeleaf, HTML5, CSS3, JS</p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Server-side rendering, responsive CSS, client countdown timer.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Architectural Overview -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+            <h2 class="card-title">System Layered Architecture</h2>
+        </div>
+        <div class="card-body" style="line-height: 1.7; color: var(--text-muted);">
+            <p style="margin-bottom: 1rem;">
+                ExamFlow enforces strict separation of concerns across multiple application tiers:
+            </p>
+            <ul style="margin-left: 1.5rem; margin-bottom: 1.5rem;">
+                <li><strong style="color: var(--text-main);">Presentation Layer:</strong> Thymeleaf templates, custom vanilla CSS design tokens, and modular JavaScript controllers.</li>
+                <li><strong style="color: var(--text-main);">Controller Layer:</strong> Handles HTTP endpoints, form data binding, and input validation (<code style="background: var(--bg-alt); padding: 0.1rem 0.4rem; border-radius: 4px;">StudentExamController</code>, <code style="background: var(--bg-alt); padding: 0.1rem 0.4rem; border-radius: 4px;">AdminDashboardController</code>).</li>
+                <li><strong style="color: var(--text-main);">Business Logic &amp; Evaluation Layer:</strong> Enforces question sanitization, transactional grading, percentage computation, and pass/fail classification.</li>
+                <li><strong style="color: var(--text-main);">Data Access Layer:</strong> Spring <code style="background: var(--bg-alt); padding: 0.1rem 0.4rem; border-radius: 4px;">JdbcTemplate</code> with parameterized SQL queries preventing SQL injection vulnerabilities.</li>
+                <li><strong style="color: var(--text-main);">Database Layer:</strong> SQLite file-based relational store enforcing foreign key integrity across students, exams, questions, attempts, answers, and results.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Evaluation Formula -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+            <h2 class="card-title">Automatic Evaluation Engine Specifications</h2>
+        </div>
+        <div class="card-body">
+            <div style="background: var(--bg-alt); padding: 1.25rem; border-radius: var(--radius-md); border-left: 4px solid var(--primary); margin-bottom: 1.5rem;">
+                <p style="font-weight: 700; color: var(--text-main); font-size: 1.05rem;">Grading Formula:</p>
+                <p style="font-family: ui-monospace, monospace; font-size: 1.1rem; color: var(--primary); margin: 0.5rem 0;">
+                    Percentage = (Marks Obtained / Maximum Marks) &times; 100
+                </p>
+                <p style="font-size: 0.9rem; color: var(--text-muted);">
+                    Status = (Percentage &ge; Exam Passing Percentage [Default 40.0%]) ? "PASS" : "FAIL"
+                </p>
+            </div>
+            <p style="font-size: 0.95rem; color: var(--text-muted);">
+                Answer keys are never transmitted to the browser before or during test execution. Even if an exam session is submitted via timeout, the server autonomously pulls the registered answers, computes scores, records individual question outcomes, and archives the attempt with an immutable UUID.
+            </p>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

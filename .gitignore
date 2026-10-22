@@ -1,0 +1,35 @@
+# Compiled class files & build artifacts
+target/
+*.class
+
+# SQLite Database Files & WAL files (Do not commit generated databases)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+examflow.db*
+
+# Log files
+*.log
+logs/
+
+# Development Tools & OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE Configurations
+.idea/
+*.iml
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# Maven Wrapper & Local Maven binary archive & local repo
+.m2/
+.mvn/wrapper/maven-wrapper.jar
+apache-maven-*/

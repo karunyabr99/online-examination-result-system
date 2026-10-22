@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html-head('Application Error')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<main class="container" style="max-width: 600px; margin: 4rem auto; text-align: center;">
+    <div class="card" style="padding: 2.5rem 1.5rem;">
+        <div style="font-size: 3.5rem; margin-bottom: 1rem;">⚠️</div>
+        <h1 style="font-size: 1.85rem; font-weight: 800; margin-bottom: 0.5rem;">An Error Has Occurred</h1>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;" th:text="${message != null ? message : 'The requested page or examination action could not be completed.'}">
+            Something unexpected occurred.
+        </p>
+
+        <div>
+            <a th:href="@{/}" class="btn btn-primary">&larr; Return to Homepage</a>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

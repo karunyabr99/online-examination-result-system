@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html-head('Home')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="hero-tag">
+                <span>⚡</span> Academic Microproject &bull; BTech CSE Demonstration
+            </div>
+            <h1 class="hero-title">
+                Next-Generation <span>Online Examination</span><br>&amp; Result Processing System
+            </h1>
+            <p class="hero-subtitle">
+                An institutional evaluation platform engineered with Java 21, Spring Boot 3, and SQLite. Featuring strict server-side grading, real-time question navigation, and instantaneous result generation.
+            </p>
+            <div class="hero-cta-group">
+                <a th:href="@{/exam/register}" class="btn btn-primary btn-lg">
+                    <span>🚀 Start Examination</span>
+                </a>
+                <a th:href="@{/admin/dashboard}" class="btn btn-secondary btn-lg">
+                    <span>📊 View Results Dashboard</span>
+                </a>
+            </div>
+
+            <!-- Dynamic Statistics Cards (Retrieved directly from SQLite) -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue">📚</div>
+                    <div>
+                        <div class="stat-label">Active Examinations</div>
+                        <div class="stat-value" th:text="${metrics.totalExams}">2</div>
+                        <div class="stat-desc">Curriculum assessments</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon purple">👨‍🎓</div>
+                    <div>
+                        <div class="stat-label">Exam Attempts</div>
+                        <div class="stat-value" th:text="${metrics.totalAttempts}">0</div>
+                        <div class="stat-desc">Completed evaluations</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon green">✅</div>
+                    <div>
+                        <div class="stat-label">Institutional Pass Rate</div>
+                        <div class="stat-value" th:text="${metrics.passRate} + '%'">0.0%</div>
+                        <div class="stat-desc" th:text="${metrics.totalPassed} + ' passed candidates'">0 candidates</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon amber">🎯</div>
+                    <div>
+                        <div class="stat-label">Average Score</div>
+                        <div class="stat-value" th:text="${metrics.averageScorePercentage} + '%'">0.0%</div>
+                        <div class="stat-desc">Overall performance index</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Available Examinations Section -->
+    <section class="container" style="margin: 3.5rem auto;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.75rem;">
+            <div>
+                <h2 style="font-size: 1.75rem; font-weight: 800; color: var(--text-main);">Available Examinations</h2>
+                <p style="color: var(--text-muted); font-size: 0.95rem;">Select an assessment to register and begin your timed evaluation session.</p>
+            </div>
+            <a th:href="@{/exam/register}" class="btn btn-outline-primary btn-sm">View All &rarr;</a>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+            <div th:each="exam : ${activeExams}" class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                <div class="card-body">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                        <span class="badge badge-primary" th:text="${exam.subject}">Computer Science</span>
+                        <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);" th:text="${exam.durationMinutes} + ' Mins'">10 Mins</span>
+                    </div>
+                    <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;" th:text="${exam.title}">Java &amp; Database Assessment</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.25rem;" th:text="${exam.description}">Assessment overview description.</p>
+                    
+                    <div style="display: flex; gap: 1rem; font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+                        <div><strong>Total Marks:</strong> <span th:text="${exam.totalMarks}">10</span></div>
+                        <div><strong>Passing:</strong> <span th:text="${exam.passingPercentage} + '%'">40%</span></div>
+                    </div>
+                </div>
+                <div class="card-footer" style="background: transparent;">
+                    <a th:href="@{/exam/register(examId=${exam.id})}" class="btn btn-primary" style="width: 100%;">
+                        <span>Register &amp; Begin Exam &rarr;</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Architectural Features Section -->
+    <section style="background: #ffffff; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 4rem 0;">
+        <div class="container">
+            <div style="text-align: center; max-width: 650px; margin: 0 auto 2.5rem;">
+                <h2 style="font-size: 2rem; font-weight: 800; color: var(--text-main);">Enterprise-Grade Architecture</h2>
+                <p style="color: var(--text-muted); margin-top: 0.5rem;">Designed according to rigorous academic software engineering standards for security, performance, and maintainability.</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon-box">🔒</div>
+                    <h3 class="feature-title">Server-Side Answer Security</h3>
+                    <p class="feature-text">Correct answer keys are strictly retained on the Java backend. The browser receives sanitized questions, preventing client-side inspection or tampering.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon-box">⚡</div>
+                    <h3 class="feature-title">Automatic Evaluation Engine</h3>
+                    <p class="feature-text">Evaluates candidate submissions instantly against database answer keys, calculates percentages, and assigns PASS or FAIL status based on configurable criteria.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon-box">⏱️</div>
+                    <h3 class="feature-title">Intelligent Examination Engine</h3>
+                    <p class="feature-text">Features a live countdown timer, automatic submission upon expiration, question palette tracking, and double-submission prevention.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon-box">💾</div>
+                    <h3 class="feature-title">SQLite Relational Persistence</h3>
+                    <p class="feature-text">Full ACID compliant relational storage using Spring JDBC and SQLite JDBC with enforced foreign keys, indexes, and parameterized queries.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon-box">📊</div>
+                    <h3 class="feature-title">Admin Results Dashboard</h3>
+                    <p class="feature-text">Real-time performance analytics, search by student name/ID, filtering by subject and pass/fail status, and one-click CSV export.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon-box">🖨️</div>
+                    <h3 class="feature-title">Print-Ready Scorecards</h3>
+                    <p class="feature-text">Polished result verification certificate with dedicated print stylesheet allowing instant PDF or paper transcript generation.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

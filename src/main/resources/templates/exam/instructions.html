@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html-head('Examination Guidelines & Instructions')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container" style="max-width: 760px; margin: 3rem auto;">
+    <div class="card">
+        <div class="card-header" style="background: var(--bg-alt);">
+            <div>
+                <h2 class="card-title">Examination Guidelines &amp; Protocol</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;" th:text="${exam.title}">Java &amp; Database Assessment</p>
+            </div>
+            <span class="badge badge-primary">Step 2 of 3</span>
+        </div>
+
+        <div class="card-body">
+            <!-- Candidate Details Summary -->
+            <div style="background: var(--primary-light); border: 1px solid var(--primary-border); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.5rem;">
+                <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;">Candidate Information</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; font-size: 0.9rem;">
+                    <div><strong>Name:</strong> <span th:text="${registrationDto.fullName}">Yashwanth Naik</span></div>
+                    <div><strong>Student ID:</strong> <span th:text="${registrationDto.studentId}">1MS21CS099</span></div>
+                    <div><strong>Course:</strong> <span th:text="${registrationDto.course}">BTech CSE</span></div>
+                    <div th:if="${registrationDto.email}"><strong>Email:</strong> <span th:text="${registrationDto.email}">candidate@college.edu</span></div>
+                </div>
+            </div>
+
+            <!-- Examination Parameters Grid -->
+            <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 1rem;">Assessment Overview</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                <div style="background: var(--bg-alt); padding: 1rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border-color);">
+                    <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 600; color: var(--text-muted);">Duration</div>
+                    <div style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin-top: 0.25rem;" th:text="${exam.durationMinutes} + ' Mins'">10 Mins</div>
+                </div>
+
+                <div style="background: var(--bg-alt); padding: 1rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border-color);">
+                    <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 600; color: var(--text-muted);">Questions</div>
+                    <div style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin-top: 0.25rem;" th:text="${questionCount}">10</div>
+                </div>
+
+                <div style="background: var(--bg-alt); padding: 1rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border-color);">
+                    <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 600; color: var(--text-muted);">Total Marks</div>
+                    <div style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin-top: 0.25rem;" th:text="${exam.totalMarks}">10</div>
+                </div>
+
+                <div style="background: var(--bg-alt); padding: 1rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border-color);">
+                    <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 600; color: var(--text-muted);">Passing Criteria</div>
+                    <div style="font-size: 1.4rem; font-weight: 800; color: var(--success); margin-top: 0.25rem;" th:text="${exam.passingPercentage} + '%'">40.0%</div>
+                </div>
+            </div>
+
+            <!-- Essential Rules List -->
+            <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.75rem;">Important Instructions</h4>
+            <ul style="color: var(--text-muted); font-size: 0.92rem; line-height: 1.6; margin-left: 1.25rem; margin-bottom: 2rem;">
+                <li>The examination consists of Multiple Choice Questions (MCQs) with single correct answer.</li>
+                <li>The timer will begin as soon as you click the <strong>Start Examination</strong> button below.</li>
+                <li>You can navigate freely between questions using the Question Palette or the Previous / Next buttons.</li>
+                <li>Selected answers are automatically preserved as you move across questions.</li>
+                <li>When the countdown timer expires, your responses will be automatically submitted and evaluated on the server.</li>
+                <li>Do not refresh or close the browser window during the examination session.</li>
+            </ul>
+
+            <!-- Form to trigger test creation -->
+            <form th:action="@{/exam/start}" method="post">
+                <input type="hidden" name="examId" th:value="${registrationDto.examId}">
+                <input type="hidden" name="fullName" th:value="${registrationDto.fullName}">
+                <input type="hidden" name="studentId" th:value="${registrationDto.studentId}">
+                <input type="hidden" name="course" th:value="${registrationDto.course}">
+                <input type="hidden" name="email" th:value="${registrationDto.email}">
+
+                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+                    <a th:href="@{/exam/register(examId=${exam.id})}" class="btn btn-secondary">&larr; Back / Edit Details</a>
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <span>🚀 Begin Examination Now</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>
